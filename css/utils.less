@@ -1,0 +1,159 @@
+@empty : ~" ";
+@bg-image-root : "img/";
+
+.base-font() {
+	font-family: @base-font;
+}
+
+.opacity( @alpha ) {
+	opacity: @alpha;
+	filter: e(%('Alpha(Opacity=%s)', @alpha * 100));
+} 
+
+.border-radius ( @radius ) {
+	-moz-border-radius		: @radius;
+    -webkit-border-radius	: @radius;
+    border-radius			: @radius;
+}
+
+.border-radius-top-left ( @radius ) {
+	-moz-border-radius-topleft		: @radius; 
+	-webkit-border-top-left-radius	: @radius; 
+	border-top-left-radius			: @radius; 
+}
+
+.border-radius-top-right ( @radius ) {
+	-moz-border-radius-topright		: @radius; 
+	-webkit-border-top-right-radius	: @radius; 
+	border-top-right-radius			: @radius; 
+}
+
+.border-radius-bottom-left ( @radius ) {
+	-moz-border-radius-bottomleft		: @radius; 
+	-webkit-border-bottom-left-radius	: @radius; 
+	border-bottom-left-radius			: @radius; 
+}
+
+.border-radius-bottom-right ( @radius ) {
+	-moz-border-radius-bottomright		: @radius; 
+	-webkit-border-bottom-right-radius	: @radius; 
+	border-bottom-right-radius			: @radius;
+}
+
+.border-radius-top ( @radius ) {
+	.border-radius-top-left(@radius);
+	.border-radius-top-right(@radius);
+}
+
+.border-radius-bottom ( @radius ) {
+	.border-radius-bottom-left(@radius);
+	.border-radius-bottom-right(@radius);
+}
+
+.border-radius-left ( @radius ) {
+	.border-radius-top-left(@radius);
+	.border-radius-bottom-left(@radius);
+}
+
+.border-radius-right ( @radius ) {
+	.border-radius-top-right(@radius);
+	.border-radius-bottom-right(@radius);
+}
+
+.box-shadow ( @horiz, @vert, @blur, @spread, @color ) {
+	-webkit-box-shadow	: @horiz @vert @blur @spread @color;
+	-moz-box-shadow		: @horiz @vert @blur @spread @color;
+	box-shadow			: @horiz @vert @blur @spread @color;
+}
+
+.box-shadow-reset() {
+	-webkit-box-shadow	: none;
+	-moz-box-shadow		: none;
+	box-shadow			: none;	
+}
+
+.box-shadow-inset ( @horiz,	@vert, @blur, @spread, @color ) {
+	-webkit-box-shadow	: inset @horiz @vert @blur @spread @color;
+	-moz-box-shadow		: inset @horiz @vert @blur @spread @color;
+	box-shadow			: inset @horiz @vert @blur @spread @color;
+}
+
+.appearance( @val:none) {
+	-moz-appearance		: @val;
+	-webkit-appearance	: @val;
+}
+
+.text-overflow(@val:ellipsis) {
+	text-overflow			: @val;
+    -webkit-text-overflow	: @val;
+}
+
+.bg-image ( @src, @left, @top, @repeat: no-repeat, @bg-color : @empty ) {
+	background : e(%("url(%s%s)", @bg-image-root ,  @src)) @left @top @repeat @bg-color;
+}
+
+.bg-image-override(@src) {
+	background-image : e(%("url(%s%s)", @bg-image-root ,  @src));
+}
+
+.bg-vert-linear-grad(@top, @bottom) { // may be a HEX, RGB or RGBA 
+	background-color: @bottom;
+	background-image: linear-gradient(bottom, @bottom 0%, @top 100%);
+	background-image: -o-linear-gradient(bottom, @bottom 0%, @top 100%);
+	background-image: -moz-linear-gradient(bottom, @bottom 0%, @top 100%);
+	background-image: -webkit-linear-gradient(bottom, @bottom 0%, @top 100%);
+	background-image: -ms-linear-gradient(bottom, @bottom 0%, @top 100%);	
+	background-image: -webkit-gradient( linear, left bottom, left top, color-stop(0, @bottom), color-stop(1, @top));
+}
+
+
+.bg-horiz-linear-grad(@left, @right) { 
+	background-color: @right;
+	background-image: linear-gradient(left , @left 0%, @right 100%);
+	background-image: -o-linear-gradient(left , @left 0%, @right 100%);
+	background-image: -moz-linear-gradient(left , @left 0%, @right 100%);
+	background-image: -webkit-linear-gradient(left , @left 0%, @right 100%);
+	background-image: -ms-linear-gradient(left , @left 0%, @right 100%);
+	background-image: -webkit-gradient(linear, left top, right top, color-stop(0, @left), color-stop(1, @right));
+
+}
+
+
+.bg-icon ( @src, @top : 50%, @left: 50%  ) {
+	.bg-image(@src, @top, @left );
+}
+
+.bg-horiz-tile (@src) {
+	.bg-image(@src, 0, 0, repeat-x );
+}
+
+.bg-vert-tile (@src) {
+	.bg-image(@src, 0, 0, repeat-y );
+}
+
+.rotate (@deg) {
+	-webkit-transform	: rotate(@deg);
+	-moz-transform		: rotate(@deg);
+}
+
+.transition (@property, @ms:200ms) {
+	-webkit-transition	: @property @ms;
+    -moz-transition		: @property @ms;
+}
+
+.box-sizing(@mode:border-box) {
+	-webkit-box-sizing	: @mode;
+	-moz-box-sizing		: @mode;
+	box-sizing			: @mode;
+}
+
+.bg-clip(@mode){
+    -webkit-background-clip	: e(%("%s-box", @mode));
+    -moz-background-clip	: @mode; /* ff 3.6 only; nonprefixed property handles 4.x */
+    background-clip			: e(%("%s-box", @mode));    
+}
+
+.ie-inline-block() {
+	zoom: 1; 
+    display: inline;
+}
