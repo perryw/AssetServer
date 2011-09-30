@@ -1,0 +1,12 @@
+This Mini asset server does LESS 
+
+You need to have the following installed
+
+node js
+http://nodejs.org/#download
+
+less node package 
+http://lesscss.org/
+
+Sass Gem
+http://sass-lang.com/

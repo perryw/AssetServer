@@ -1,6 +1,8 @@
 var http = require('http'),
 	less = require('less'), 
-	fs = require('fs');
+	sys = require('sys'),
+	fs = require('fs'),
+	exec = require('child_process').exec;
 
 var SILENT 		= 0;
 var NORMAL 		= 1;
@@ -20,7 +22,7 @@ function mssg(mes, level) {
 
 function getMimeType(ext) {
 	if (ext == 'png' || ext == 'jpg' || ext == 'gif') { return "image/" + ext; }
-	if (ext == 'css' || ext == 'less') { return "text/css"; }
+	if (ext == 'css' || ext == 'less' || ext == 'sass' || ext == 'scss') { return "text/css"; }
 	if (ext == 'js') { return "application/javascript"; }	
 	return "text/html";
 }
@@ -124,6 +126,27 @@ http.createServer(function (request, response) {
 		}
 		
 	}
+	
+	function processSass (data){
+		try {
+			mssg("Processing sass file at " + usePath, VERBOSE);
+			
+			exec("sass " + usePath, 
+				function(err, stdout, stderr) { 
+					if (err || stderr) {
+						mssg("Sass Parser Error : at " + usePath + " : " + err + " : " + stderr, NORMAL);
+						do404(response, requestPath);
+						return;
+					}
+					do200(response, requestPath, stdout);
+				});
+		} catch (err) {
+			do404(response, requestPath);
+			mssg("Sass Parser Error : at " + usePath + " : " + err, NORMAL);
+			return;
+		}
+		
+	}
 
 	function processJSONFiles(filesArray) {
 		var counter 		= 0,
@@ -174,20 +197,38 @@ http.createServer(function (request, response) {
 			}
 		});
 	} else if (requestExtension == "css" ) {
-		var lessPath = filePath.substring(0, filePath.lastIndexOf(".")) + ".less";
+		var basePath 		= filePath.substring(0, filePath.lastIndexOf(".")),
+			lessPath 		= basePath + ".less",
+			sassPath 		= basePath + ".sass",
+			scssPath		= basePath + ".scss"
+			usePath			= null;
+		
 		if (fileExists(lessPath)) {
-			fs.readFile(lessPath, "utf8", function(err, data) {
-				if (err){ 
-					do404(response, requestPath);
-					mssg("File not found : at " + lessPath + " : " + err, NORMAL);
-					return;
-				}
-				processLess(data);
-			});
-		} else {
+			usePath = lessPath;
+		} else if (fileExists(sassPath)){
+			usePath = sassPath;
+		} else if (fileExists(scssPath)){
+			usePath = scssPath;
+		}
+		
+		if (usePath == null) {
 			mssg("WARNING requesting a nonexistent LESS file", NORMAL);
 			do404(response, requestPath);
+			return;
 		}
+		console.log("usePath is" + usePath);
+		fs.readFile(usePath, "utf8", function(err, data) {
+			if (err){ 
+				do404(response, requestPath);
+				mssg("File not found : at " + usePath + " : " + err, NORMAL);
+				return;
+			}
+			if (usePath == lessPath) {
+				processLess(data);
+			} else {
+				processSass(data);
+			}
+		});
 	} else {
 		mssg("WARNING requesting a nonexistent file at " + filePath, NORMAL);
 		do404(response, requestPath);
