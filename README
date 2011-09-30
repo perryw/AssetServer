@@ -1,4 +1,7 @@
-This Mini asset server does LESS 
+This Mini asset server does Javascript concat for convenience, 
+LESS and SASS (also scss) preprocessing and might so some other 
+stuff in the future. 
+
 
 You need to have the following installed
 
