@@ -102,50 +102,18 @@ http.createServer(function (request, response) {
 	var filePath = assetsDir + requestPath;
 	var requestExtension = getExtension(request.url); 
 	
-	function processLess (data){
-					
-		var parser = new(less.Parser)({ 
-			paths: [assetsDir + "css/", assetsDir, '.'],
-			filename: lessPath });
-			
-		try {
-			parser.parse(data, function (err, tree) { 
-				if (err){ 
+	function doPreProcess(type) {
+		mssg("Processing sass file at " + usePath, VERBOSE);
+		
+		exec(type + " " + usePath, 
+			function(err, stdout, stderr) { 
+				if (err || stderr) {
+					mssg("Sass Parser Error : at " + usePath + " : " + err + " : " + stderr, NORMAL);
 					do404(response, requestPath);
-					mssg("Less Parser Error : at " + lessPath + " : " + JSON.stringify(err), NORMAL);
 					return;
-				}	
-				mssg("Processing less file at " + lessPath, VERBOSE);
-				var css = tree.toCSS({ compress: compressLessFiles });
-				do200(response, requestPath, css);
+				}
+				do200(response, requestPath, stdout);
 			});
-		} catch (err) {
-			do404(response, requestPath);
-			mssg("Less Parser Error : at " + lessPath + " : " + err, NORMAL);
-			return;
-		}
-		
-	}
-	
-	function processSass (data){
-		try {
-			mssg("Processing sass file at " + usePath, VERBOSE);
-			
-			exec("sass " + usePath, 
-				function(err, stdout, stderr) { 
-					if (err || stderr) {
-						mssg("Sass Parser Error : at " + usePath + " : " + err + " : " + stderr, NORMAL);
-						do404(response, requestPath);
-						return;
-					}
-					do200(response, requestPath, stdout);
-				});
-		} catch (err) {
-			do404(response, requestPath);
-			mssg("Sass Parser Error : at " + usePath + " : " + err, NORMAL);
-			return;
-		}
-		
 	}
 
 	function processJSONFiles(filesArray) {
@@ -216,24 +184,13 @@ http.createServer(function (request, response) {
 			do404(response, requestPath);
 			return;
 		}
-		console.log("usePath is" + usePath);
-		fs.readFile(usePath, "utf8", function(err, data) {
-			if (err){ 
-				do404(response, requestPath);
-				mssg("File not found : at " + usePath + " : " + err, NORMAL);
-				return;
-			}
-			if (usePath == lessPath) {
-				processLess(data);
-			} else {
-				processSass(data);
-			}
-		});
+		
+		doPreProcess((usePath == lessPath) ? "lessc" : "sass");
+		
 	} else {
 		mssg("WARNING requesting a nonexistent file at " + filePath, NORMAL);
 		do404(response, requestPath);
 	}
-	
 }).listen(port);
 
 mssg('Server running at http://localhost:' + port + '/', NORMAL);
