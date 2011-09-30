@@ -1,18 +1,18 @@
-var http = require('http'),
-	less = require('less'), 
-	sys = require('sys'),
-	fs = require('fs'),
-	exec = require('child_process').exec;
+var http 	= require('http'),
+	less 	= require('less'), 
+	sys 	= require('sys'),
+	fs 		= require('fs'),
+	exec 	= require('child_process').exec;
 
-var SILENT 		= 0;
-var NORMAL 		= 1;
-var VERBOSE 	= 2;
-var SILLY 		= 3;
+var SILENT	= 0,
+	NORMAL	= 1,
+	VERBOSE	= 2,
+	SILLY	= 3;
 
-var assetsDir 			= './';
-var port 				= 8124;
-var compressLessFiles 	= false;
-var debugLevel 			= SILLY;
+var assetsDir			= './',
+	port				= 8124,
+	compressLessFiles	= false,
+	debugLevel			= SILLY;
 
 function mssg(mes, level) {
 	if (level <= debugLevel) {
@@ -33,9 +33,8 @@ function getExtension(requestPath) {
 }
 
 function getDirectiveValue(directiveString, searchString) {
-	var retString = "";
-	
-	var directiveStart = searchString.indexOf(directiveString);
+	var retString = "",
+		directiveStart = searchString.indexOf(directiveString);
 	
 	if (directiveStart > -1) {
 		directiveStart = searchString.substring(directiveStart + directiveString.length);
